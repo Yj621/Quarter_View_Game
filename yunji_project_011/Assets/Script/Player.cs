@@ -38,7 +38,7 @@ public class Player : MonoBehaviour
     bool isJump;
     bool isDodge;
     bool isSwap;
-    bool isFireReady; //공격준비
+    bool isFireReady = true; //공격준비
 
     Vector3 moveVec;
     Vector3 dodgeVec;
@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
     Animator anim;
     GameObject nearObject; //근처에 있는 오브젝트 인식
     Weapon equipWeapon; //장착중인 무기 저장 변수
-    int equipWeaponIndex =-1 ; //기본값을 -1로 해줌으로써 0번째 index랑 겹치지 않게 함
+    int equipWeaponIndex = -1; //기본값을 -1로 해줌으로써 0번째 index랑 겹치지 않게 함
     float fireDelay; //공격딜레이
 
     void Start()
@@ -88,7 +88,7 @@ public class Player : MonoBehaviour
             moveVec = dodgeVec; //회피 중에는 움직임 벡터 => 회피방향 벡터로 바뀌도록 구현
         }
 
-        if (isSwap)
+        if (isSwap || !isFireReady)
         {
             moveVec = Vector3.zero; //무기 교체를 하고 있을 때는 움직임벡터 0
         }
