@@ -12,7 +12,7 @@ public class Bullet : MonoBehaviour
         {
             Destroy(gameObject, 3);
         }
-        else if (collision.gameObject.tag == "Floor")
+        else if (collision.gameObject.tag == "Wall")
         {
             Destroy(gameObject);
         }

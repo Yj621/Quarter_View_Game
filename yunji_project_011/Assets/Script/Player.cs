@@ -74,10 +74,10 @@ public class Player : MonoBehaviour
         vAxis = Input.GetAxisRaw("Vertical");
         wDown = Input.GetButton("Walk");
         fDown = Input.GetButton("Fire1"); //공격키(마우스 왼쪽)
-        jDown = Input.GetButton("Jump");
-        iDown = Input.GetButton("Interaction"); //상호작용
-        sDown1 = Input.GetButton("Swap1");
-        sDown2 = Input.GetButton("Swap2"); //새로운 Input을 위해 Input Manager에서 size늘려서 사용자 지정
+        jDown = Input.GetButtonDown("Jump");
+        iDown = Input.GetButtonDown("Interaction"); //상호작용
+        sDown1 = Input.GetButtonDown("Swap1");
+        sDown2 = Input.GetButtonDown("Swap2"); //새로운 Input을 위해 Input Manager에서 size늘려서 사용자 지정
     }
 
     void Move() //이동 함수
@@ -130,7 +130,7 @@ public class Player : MonoBehaviour
         {
             equipWeapon.Use(); //무기에 있는 함수 실행
 
-            anim.SetTrigger("doSwing");
+            anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot");//장착된 무기의 종류가 근거리면 doSwing, 원거리면 doShot
             fireDelay = 0; //공격딜레이를 0으로 초기화해주고 다음 공격까지 기다리도록해줌
         }
 
