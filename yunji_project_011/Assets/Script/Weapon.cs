@@ -43,10 +43,11 @@ public class Weapon : MonoBehaviour
 
         //2
         yield return new WaitForSeconds(0.3f); //1프레임 대기
-        meleeArea.enabled = false;
+        
 
         //3
         yield return new WaitForSeconds(0.3f); //1프레임 대기
+        meleeArea.enabled = false;
         trailEffect.enabled = false;
     }
     IEnumerator Shot() //열거형 함수 클래스 (코루틴)

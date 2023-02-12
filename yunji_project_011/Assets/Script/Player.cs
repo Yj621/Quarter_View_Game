@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
     bool isSwap;
     bool isReload;
     bool isFireReady = true; //공격준비
+    bool isBorder;
 
     Vector3 moveVec;
     Vector3 dodgeVec;
@@ -72,7 +73,7 @@ public class Player : MonoBehaviour
         Swap();
     }
 
-    void GetInput() //Input함수로 묶어줌
+    void GetInput() //Button을 Input함수로 묶어줌
     {
         hAxis = Input.GetAxisRaw("Horizontal"); //Axis값을 정수로 반환하는 함수
         vAxis = Input.GetAxisRaw("Vertical");
@@ -98,7 +99,12 @@ public class Player : MonoBehaviour
             moveVec = Vector3.zero; //무기 교체를 하고 있을 때는 움직임벡터 0
         }
 
-        transform.position += moveVec * speed * (wDown ? 0.3f : 1f) * Time.deltaTime; //transform이동은 Time.deltaTime을 곱해줘야함 
+        if (!isBorder)
+        {
+            transform.position += moveVec * speed * (wDown ? 0.3f : 1f) * Time.deltaTime; //transform이동은 Time.deltaTime을 곱해줘야함 
+
+        }
+
 
         anim.SetBool("IsRun", moveVec != Vector3.zero); //SetBool함수로 파라미터 값 설정, 0,0,0만 아니면 된다
         anim.SetBool("IsWalk", wDown);
@@ -151,7 +157,8 @@ public class Player : MonoBehaviour
         {
             equipWeapon.Use(); //무기에 있는 함수 실행
 
-            anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot");//장착된 무기의 종류가 근거리면 doSwing, 원거리면 doShot
+            anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot");
+            //장착된 무기의 종류가 근거리면 doSwing, 원거리면 doShot
             fireDelay = 0; //공격딜레이를 0으로 초기화해주고 다음 공격까지 기다리도록해줌
         }
 
@@ -256,6 +263,25 @@ public class Player : MonoBehaviour
             }
 
         }
+    }
+
+    void StopToWall()
+    {
+        Debug.DrawRay(transform.position, transform.forward * 5, Color.green);
+        //시작위치, 쏘는 방향 / 길이, 색
+        isBorder = Physics.Raycast(transform.position, transform.forward, 5, LayerMask.GetMask("Wall"));
+        //시작위치, 쏘는 방향, 길이, LayerMask(특정 레이어만 카메라에 노출되도록)
+    }
+
+    void FreezeRotation()
+    {
+        rigid.angularVelocity = Vector3.zero;
+    }
+
+    void FixedUpdate()
+    {
+        FreezeRotation();
+        StopToWall();
     }
 
 
