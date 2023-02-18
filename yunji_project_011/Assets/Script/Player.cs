@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class Player : MonoBehaviour
 
     public GameObject[] grenades; //공전하는 물체를 생성하기 위해 배열 변수 선언
     public int hasGrenades;//수류탄
+    public GameObject grenadeObj;
     public Camera followCamera;
 
     public int ammo;
@@ -32,6 +34,7 @@ public class Player : MonoBehaviour
     bool jDown; //점프키
     bool iDown; //상호작용키
     bool fDown; //공격키
+    bool gDown; //수류탄
     bool rDown; //재장전
 
     bool sDown1;//장비 단축키(1번)
@@ -66,6 +69,7 @@ public class Player : MonoBehaviour
         Move();
         Turn();
         Jump();
+        Grenade();
         Attack();
         Reload(); //재장전
         Dodge();
@@ -79,6 +83,7 @@ public class Player : MonoBehaviour
         vAxis = Input.GetAxisRaw("Vertical");
         wDown = Input.GetButton("Walk");
         fDown = Input.GetButton("Fire1"); //공격키(마우스 왼쪽)
+        gDown = Input.GetButtonDown("Fire2"); //수류탄(마우스 오른쪽)
         rDown = Input.GetButtonDown("Reload"); //재장전 (R키)
         jDown = Input.GetButtonDown("Jump");
         iDown = Input.GetButtonDown("Interaction"); //상호작용
@@ -141,6 +146,41 @@ public class Player : MonoBehaviour
             anim.SetBool("IsJump", true);
             anim.SetTrigger("doJump"); //애니메이션
             isJump = true;
+        }
+    }
+
+    void Grenade()
+    {
+        if (hasGrenades == 0)
+        {
+            return;
+        }
+        //수류탄의 개수가 없으면 실행x
+
+        if(gDown && !isReload && !isSwap)
+        {
+            Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit rayHit; //RaycastHit 정보를 저장할 변수 추가
+
+            if (Physics.Raycast(ray, out rayHit, 100))
+            {
+                Vector3 nextVec = rayHit.point - transform.position; 
+                //RaycastHit의 마우스 클릭 위치를 활용해 회전 구현
+
+                nextVec.y = 10;//약간 위로
+                //Turn에서 사용한 Ray함수와 동일
+                GameObject instantGrenade = Instantiate(grenadeObj, transform.position, transform.rotation);
+                //프리팹 인스턴트화
+                Rigidbody rigidGrenade = instantGrenade.GetComponent<Rigidbody>();
+                //Rigidbody로 물리힘을 가함
+                rigidGrenade.AddForce(nextVec, ForceMode.Impulse);
+                rigidGrenade.AddTorque(Vector3.back *10, ForceMode.Impulse);
+                //회전
+
+                hasGrenades--;
+                grenades[hasGrenades].SetActive(false);
+                //공전하는 수류탄 하나를 비활성화해줌
+            }
         }
     }
 
